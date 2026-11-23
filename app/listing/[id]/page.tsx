@@ -4,10 +4,12 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { eur, fmtDate, Listing } from "@/lib/util";
+import { useT } from "@/lib/i18n";
 
 export default function ListingPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
+  const { t, lang } = useT();
   const [l, setL] = useState<Listing | null>(null);
   const [uid, setUid] = useState<string | null>(null);
   const [rating, setRating] = useState<{ avg: number; n: number } | null>(null);
@@ -16,6 +18,7 @@ export default function ListingPage() {
   const [reporting, setReporting] = useState(false);
   const [reason, setReason] = useState("");
   const [reported, setReported] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => setUid(data.session?.user.id ?? null));
@@ -26,7 +29,7 @@ export default function ListingPage() {
       .single()
       .then(async ({ data, error }) => {
         if (error || !data) {
-          setError("Listing not found.");
+          setError("notfound");
           return;
         }
         const listing = data as unknown as Listing;
@@ -83,66 +86,105 @@ export default function ListingPage() {
     }
   }
 
-  if (!l) return <p className="empty">{error || "Loading…"}</p>;
+  if (!l) return <p className="empty">{error ? t("not_found") : t("loading")}</p>;
   const mine = uid === l.user_id;
+
+  const link = typeof window !== "undefined" ? window.location.href : "";
+  const shareText =
+    t("share_text", {
+      club: l.club,
+      date: fmtDate(l.event_date, lang),
+      price: eur(l.price_cents),
+    }) +
+    "\n" +
+    link;
+
+  async function copy() {
+    try {
+      await navigator.clipboard.writeText(link);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {}
+  }
 
   return (
     <>
       <p>
-        <Link href="/">← Back</Link>
+        <Link href="/">{t("back")}</Link>
       </p>
-      <span className={`tag ${l.kind}`}>{l.kind === "sell" ? "FOR SALE" : "WANTED"}</span>
+      <span className={`tag ${l.kind}`}>
+        {l.kind === "sell" ? t("for_sale_tag") : t("wanted_tag")}
+      </span>
       <h1>{l.club}</h1>
       <p className="sub">
-        {fmtDate(l.event_date)} · {l.quantity} ticket{l.quantity > 1 ? "s" : ""}
+        {fmtDate(l.event_date, lang)} ·{" "}
+        {t(l.quantity > 1 ? "tix_many" : "tix_one", { n: l.quantity })}
       </p>
       <p className="price" style={{ fontSize: 28, margin: "8px 0" }}>
-        {l.kind === "want" ? "up to " : ""}
+        {l.kind === "want" ? t("upto") + " " : ""}
         {eur(l.price_cents)}
       </p>
       {l.face_cents !== null && (
-        <p className="meta">Face value {eur(l.face_cents)}</p>
+        <p className="meta">
+          {t("face_value")} {eur(l.face_cents)}
+        </p>
       )}
       {l.note && <p>{l.note}</p>}
       <p className="meta">
-        Posted by <b>{l.profiles?.pseudo}</b>
+        {t("posted_by")} <b>{l.profiles?.pseudo}</b>
         {rating
           ? ` · ★ ${rating.avg.toFixed(1)} (${rating.n})`
-          : " · no reviews yet"}
+          : ` · ${t("no_reviews")}`}
       </p>
 
-      {l.status === "closed" && <p className="notice">This listing is closed.</p>}
-      {error && <p className="err">{error}</p>}
+      {l.status === "closed" && <p className="notice">{t("closed_notice")}</p>}
+      {error && error !== "notfound" && <p className="err">{error}</p>}
 
       {l.status === "open" && !mine && (
         <button className="btn block" onClick={contact} disabled={busy}>
-          {l.kind === "sell" ? "I'm interested" : "I have one"}
+          {l.kind === "sell" ? t("interested") : t("i_have_one")}
         </button>
       )}
       {mine && l.status === "open" && (
         <button className="btn ghost block" onClick={close}>
-          Close this listing (sold / no longer needed)
+          {t("close_listing")}
         </button>
+      )}
+
+      {l.status === "open" && (
+        <div className="sharebar">
+          <a
+            className="btn wa"
+            href={`https://wa.me/?text=${encodeURIComponent(shareText)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {t("share_wa")}
+          </a>
+          <button className="btn ghost" onClick={copy}>
+            {copied ? t("copied") : t("copy_link")}
+          </button>
+        </div>
       )}
 
       {!mine && uid && (
         <p style={{ marginTop: 24 }}>
           {reported ? (
-            <span className="ok">Thanks, we&apos;ll look into it.</span>
+            <span className="ok">{t("report_thanks")}</span>
           ) : reporting ? (
             <>
               <textarea
                 value={reason}
                 onChange={(e) => setReason(e.target.value)}
-                placeholder="What's wrong with this listing?"
+                placeholder={t("report_ph")}
               />
               <button className="btn small" onClick={sendReport} disabled={reason.trim().length < 3}>
-                Send report
+                {t("send_report")}
               </button>
             </>
           ) : (
             <button className="link" onClick={() => setReporting(true)}>
-              Report this listing
+              {t("report_listing")}
             </button>
           )}
         </p>

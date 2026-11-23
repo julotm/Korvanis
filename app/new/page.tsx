@@ -2,12 +2,16 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
+import { CLUBS, OTHER } from "@/lib/clubs";
+import { useT } from "@/lib/i18n";
 
 export default function NewListing() {
   const router = useRouter();
+  const { t } = useT();
   const [uid, setUid] = useState<string | null>(null);
   const [kind, setKind] = useState<"sell" | "want">("sell");
-  const [club, setClub] = useState("");
+  const [clubSel, setClubSel] = useState("");
+  const [clubOther, setClubOther] = useState("");
   const [date, setDate] = useState("");
   const [face, setFace] = useState("");
   const [price, setPrice] = useState("");
@@ -21,21 +25,25 @@ export default function NewListing() {
       if (!data.session) router.replace("/login");
       else setUid(data.session.user.id);
     });
+    const p = new URLSearchParams(window.location.search);
+    if (p.get("kind") === "want") setKind("want");
+    const c = p.get("club");
+    if (c && CLUBS.includes(c)) setClubSel(c);
   }, [router]);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
+    const club = clubSel === OTHER ? clubOther.trim() : clubSel;
+    if (!club || club.length < 2) return setError(t("need_club"));
     const priceC = Math.round(parseFloat(price.replace(",", ".")) * 100);
     const faceC =
       kind === "sell" ? Math.round(parseFloat(face.replace(",", ".")) * 100) : null;
     if (isNaN(priceC) || (kind === "sell" && (faceC === null || isNaN(faceC)))) {
-      setError("Please enter valid prices.");
-      return;
+      return setError(t("bad_prices"));
     }
     if (kind === "sell" && faceC !== null && priceC > faceC) {
-      setError("Your price can't be higher than what you paid (face value).");
-      return;
+      return setError(t("price_above_face"));
     }
     setBusy(true);
     const { data, error } = await supabase
@@ -43,7 +51,7 @@ export default function NewListing() {
       .insert({
         user_id: uid,
         kind,
-        club: club.trim(),
+        club,
         event_date: date,
         price_cents: priceC,
         face_cents: faceC,
@@ -59,69 +67,68 @@ export default function NewListing() {
 
   return (
     <>
-      <h1>Post</h1>
+      <h1>{t("new_title")}</h1>
       <div className="tabs">
         <button className={kind === "sell" ? "on" : ""} onClick={() => setKind("sell")} type="button">
-          I sell a ticket
+          {t("i_sell")}
         </button>
         <button className={kind === "want" ? "on" : ""} onClick={() => setKind("want")} type="button">
-          I&apos;m looking for one
+          {t("i_look")}
         </button>
       </div>
       <form onSubmit={submit}>
-        <label>Club</label>
-        <input
-          list="clubs"
-          value={club}
-          onChange={(e) => setClub(e.target.value)}
-          placeholder="Club name"
-          required
-        />
-        <datalist id="clubs">
-          <option value="Opium" />
-          <option value="Pacha" />
-          <option value="Razzmatazz" />
-          <option value="Shôko" />
-          <option value="Carpe Diem" />
-        </datalist>
+        <label>{t("club")}</label>
+        <select value={clubSel} onChange={(e) => setClubSel(e.target.value)} required>
+          <option value="">{t("club_choose")}</option>
+          {CLUBS.map((c) => (
+            <option key={c} value={c}>
+              {c}
+            </option>
+          ))}
+          <option value={OTHER}>{t("other")}…</option>
+        </select>
+        {clubSel === OTHER && (
+          <input
+            style={{ marginTop: 8 }}
+            value={clubOther}
+            onChange={(e) => setClubOther(e.target.value)}
+            placeholder={t("club_other_ph")}
+            required
+          />
+        )}
 
-        <label>Date of the night</label>
+        <label>{t("night_date")}</label>
         <input type="date" value={date} onChange={(e) => setDate(e.target.value)} required />
 
         <div className="row">
           {kind === "sell" && (
             <div>
-              <label>Face value (€)</label>
+              <label>{t("face_label")}</label>
               <input inputMode="decimal" value={face} onChange={(e) => setFace(e.target.value)} placeholder="15" required />
             </div>
           )}
           <div>
-            <label>{kind === "sell" ? "Your price (€)" : "Max price (€)"}</label>
+            <label>{kind === "sell" ? t("your_price") : t("max_price")}</label>
             <input inputMode="decimal" value={price} onChange={(e) => setPrice(e.target.value)} placeholder="15" required />
           </div>
           <div>
-            <label>Tickets</label>
+            <label>{t("tickets")}</label>
             <input type="number" min={1} max={10} value={qty} onChange={(e) => setQty(e.target.value)} required />
           </div>
         </div>
-        {kind === "sell" && (
-          <p className="meta">
-            Face value is what you paid. You can sell at that price or lower,
-            not higher.
-          </p>
-        )}
+        {kind === "sell" && <p className="meta">{t("face_hint")}</p>}
 
-        <label>Note (optional)</label>
+        <label>{t("note")}</label>
         <textarea
           value={note}
           onChange={(e) => setNote(e.target.value)}
           maxLength={300}
-          placeholder={kind === "sell" ? "QR code, entry before 2am, …" : "Any detail that helps"}
+          placeholder={kind === "sell" ? t("note_sell_ph") : t("note_want_ph")}
         />
         {error && <p className="err">{error}</p>}
         <div style={{ marginTop: 16 }}>
           <button className="btn block" disabled={busy}>
-            Publish
+            {t("publish")}
           </button>
         </div>
       </form>

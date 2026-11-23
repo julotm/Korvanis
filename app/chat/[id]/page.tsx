@@ -4,6 +4,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { eur, fmtDate } from "@/lib/util";
+import { useT } from "@/lib/i18n";
 
 type Conv = {
   id: string;
@@ -21,6 +22,7 @@ type Msg = { id: string; sender_id: string; body: string; created_at: string };
 export default function Chat() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
+  const { t, lang } = useT();
   const [uid, setUid] = useState<string | null>(null);
   const [conv, setConv] = useState<Conv | null>(null);
   const [msgs, setMsgs] = useState<Msg[]>([]);
@@ -119,7 +121,7 @@ export default function Chat() {
     }
   }
 
-  if (!conv || !uid) return <p className="empty">Loading…</p>;
+  if (!conv || !uid) return <p className="empty">{t("loading")}</p>;
   const iAmOwner = uid === conv.owner_id;
   const otherPseudo = iAmOwner ? conv.other?.pseudo : conv.owner?.pseudo;
   const myOk = iAmOwner ? conv.owner_ok : conv.other_ok;
@@ -129,27 +131,25 @@ export default function Chat() {
   return (
     <>
       <p>
-        <Link href="/inbox">← Inbox</Link>
+        <Link href="/inbox">← {t("inbox")}</Link>
       </p>
       <h1>{conv.listing?.club}</h1>
       <p className="sub">
-        {conv.listing && fmtDate(conv.listing.event_date)} ·{" "}
-        {conv.listing && eur(conv.listing.price_cents)} · with{" "}
+        {conv.listing && fmtDate(conv.listing.event_date, lang)} ·{" "}
+        {conv.listing && eur(conv.listing.price_cents)} · {t("with")}{" "}
         <b>{otherPseudo}</b>
       </p>
 
       {!unlocked && (
         <div className="notice">
-          Phone numbers, @handles and links are hidden until you both tap
-          &quot;We&apos;re agreed&quot;. Agree on the price and how you&apos;ll
-          hand over the ticket, then confirm.
-          {theirOk && !myOk && <b> {otherPseudo} already confirmed.</b>}
+          {t("chat_notice")}
+          {theirOk && !myOk && <b> {t("already_confirmed", { name: otherPseudo ?? "" })}</b>}
         </div>
       )}
 
       <div className="chat">
         {msgs.length === 0 && (
-          <p className="empty">Say hi and agree on the details.</p>
+          <p className="empty">{t("say_hi")}</p>
         )}
         {msgs.map((m) => (
           <div key={m.id} className={`msg ${m.sender_id === uid ? "me" : ""}`}>
@@ -165,28 +165,28 @@ export default function Chat() {
         <input
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder="Message…"
+          placeholder={t("message_ph")}
           maxLength={1000}
         />
-        <button className="btn">Send</button>
+        <button className="btn">{t("send")}</button>
       </form>
 
       {!myOk && (
         <button className="btn ghost block" style={{ marginTop: 8 }} onClick={agree}>
-          We&apos;re agreed
+          {t("agreed_btn")}
         </button>
       )}
       {myOk && !theirOk && (
-        <p className="meta">Waiting for {otherPseudo} to confirm…</p>
+        <p className="meta">{t("waiting", { name: otherPseudo ?? "" })}</p>
       )}
 
       {unlocked && (
         <div className="notice">
-          <b>Deal confirmed.</b> Contact details are now visible.
+          <b>{t("deal_confirmed")}</b> {t("contacts_visible")}
           {!reviewed ? (
             <>
               <p style={{ margin: "8px 0 4px" }}>
-                After the night, rate {otherPseudo}:
+                {t("rate", { name: otherPseudo ?? "" })}
               </p>
               <div className="stars">
                 {[1, 2, 3, 4, 5].map((n) => (
@@ -203,36 +203,36 @@ export default function Chat() {
               <input
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
-                placeholder="Comment (optional)"
+                placeholder={t("comment_ph")}
                 maxLength={300}
               />
               <button className="btn small" style={{ marginTop: 8 }} onClick={review} disabled={!rating}>
-                Send review
+                {t("send_review")}
               </button>
             </>
           ) : (
-            <p className="ok">Thanks for your review!</p>
+            <p className="ok">{t("review_thanks")}</p>
           )}
         </div>
       )}
 
       <p style={{ marginTop: 24 }}>
         {reported ? (
-          <span className="ok">Thanks, we&apos;ll look into it.</span>
+          <span className="ok">{t("report_thanks")}</span>
         ) : reporting ? (
           <>
             <textarea
               value={reason}
               onChange={(e) => setReason(e.target.value)}
-              placeholder="What happened?"
+              placeholder={t("report_what")}
             />
             <button className="btn small" onClick={sendReport} disabled={reason.trim().length < 3}>
-              Send report
+              {t("send_report")}
             </button>
           </>
         ) : (
           <button className="link" onClick={() => setReporting(true)}>
-            Report a problem (scam, no-show…)
+            {t("report_problem")}
           </button>
         )}
       </p>

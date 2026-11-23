@@ -1,13 +1,19 @@
 "use client";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { eur, fmtDate, Listing } from "@/lib/util";
+import { Listing } from "@/lib/util";
+import { CLUBS, OTHER } from "@/lib/clubs";
+import { useT } from "@/lib/i18n";
+import ListingCard from "@/components/ListingCard";
 
 export default function Home() {
+  const { t } = useT();
   const [kind, setKind] = useState<"sell" | "want">("sell");
   const [items, setItems] = useState<Listing[] | null>(null);
+  const [club, setClub] = useState<string>(""); // "" = toutes
   const [q, setQ] = useState("");
+  const [focus, setFocus] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -24,64 +30,130 @@ export default function Home() {
       });
   }, []);
 
-  const shown = (items || []).filter(
-    (l) =>
-      l.kind === kind &&
-      (!q || l.club.toLowerCase().includes(q.toLowerCase()))
+  const ofKind = useMemo(
+    () => (items || []).filter((l) => l.kind === kind),
+    [items, kind]
   );
+  const bucket = (l: Listing) => (CLUBS.includes(l.club) ? l.club : OTHER);
+  const counts = useMemo(() => {
+    const c: Record<string, number> = {};
+    ofKind.forEach((l) => (c[bucket(l)] = (c[bucket(l)] || 0) + 1));
+    return c;
+  }, [ofKind]);
+
+  const shown = ofKind.filter((l) => !club || bucket(l) === club);
+  const sorted = [...CLUBS].sort((a, b) => (counts[b] || 0) - (counts[a] || 0));
+  const suggestions = CLUBS.filter((c) =>
+    c.toLowerCase().includes(q.trim().toLowerCase())
+  );
+
+  function pick(c: string) {
+    setClub(c);
+    setQ("");
+    setFocus(false);
+  }
+
+  const clubLabel = club === OTHER ? t("other") : club;
 
   return (
     <>
       <div className="hero">
-        <h1>Club tickets, student to student.</h1>
-        <p>
-          Post a ticket you can&apos;t use, or ask for one. No commission, no
-          names shown.
-        </p>
+        <h1>{t("hero_title")}</h1>
+        <p>{t("hero_sub")}</p>
         <Link href="/new" className="btn">
-          Post a ticket or a request
+          {t("hero_cta")}
         </Link>
+      </div>
+
+      <div className="steps">
+        {[1, 2, 3].map((n) => (
+          <div className="step" key={n}>
+            <b>
+              <i>{n}</i>
+              {t(`step${n}_t` as "step1_t")}
+            </b>
+            {t(`step${n}_d` as "step1_d")}
+          </div>
+        ))}
       </div>
 
       <div className="tabs">
         <button className={kind === "sell" ? "on" : ""} onClick={() => setKind("sell")}>
-          For sale
+          {t("tab_sell")}
         </button>
         <button className={kind === "want" ? "on" : ""} onClick={() => setKind("want")}>
-          Wanted
+          {t("tab_want")}
         </button>
       </div>
 
-      <input
-        placeholder="Search a club"
-        value={q}
-        onChange={(e) => setQ(e.target.value)}
-      />
+      <div className="searchwrap">
+        <input
+          placeholder={t("search_ph")}
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          onFocus={() => setFocus(true)}
+          onBlur={() => setTimeout(() => setFocus(false), 150)}
+        />
+        {focus && suggestions.length > 0 && (
+          <div className="suggest">
+            {suggestions.map((c) => (
+              <button key={c} onMouseDown={() => pick(c)}>
+                {c}
+                <span>{counts[c] || 0}</span>
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
 
-      <div style={{ marginTop: 12 }}>
+      <div className="chips">
+        <button className={`chip ${club === "" ? "on" : ""}`} onClick={() => setClub("")}>
+          {t("all")}
+          <em>{ofKind.length}</em>
+        </button>
+        {sorted.map((c) => (
+          <button
+            key={c}
+            className={`chip ${club === c ? "on" : ""} ${counts[c] ? "" : "zero"}`}
+            onClick={() => setClub(c)}
+          >
+            {c}
+            <em>{counts[c] || 0}</em>
+          </button>
+        ))}
+        {counts[OTHER] ? (
+          <button
+            className={`chip ${club === OTHER ? "on" : ""}`}
+            onClick={() => setClub(OTHER)}
+          >
+            {t("other")}
+            <em>{counts[OTHER]}</em>
+          </button>
+        ) : null}
+      </div>
+
+      <div>
         {error && <p className="err">{error}</p>}
-        {items === null && !error && <p className="empty">Loading…</p>}
+        {items === null && !error && <p className="empty">{t("loading")}</p>}
         {items && shown.length === 0 && (
-          <p className="empty">
-            Nothing here yet.
-            <br />
-            Be the first to post!
-          </p>
+          <div className="emptybox">
+            <p>
+              {club ? t("empty_club", { club: clubLabel }) : t("empty_all")}
+              <br />
+              {t("empty_sub")}
+            </p>
+            <div className="row">
+              <Link href={`/new?kind=sell${club && club !== OTHER ? `&club=${encodeURIComponent(club)}` : ""}`} className="btn small">
+                {t("empty_cta_sell")}
+              </Link>
+              <Link href={`/new?kind=want${club && club !== OTHER ? `&club=${encodeURIComponent(club)}` : ""}`} className="btn small ghost">
+                {t("empty_cta_want")}
+              </Link>
+            </div>
+          </div>
         )}
         {shown.map((l) => (
-          <Link key={l.id} href={`/listing/${l.id}`} className="card">
-            <div className="top">
-              <span className="club">{l.club}</span>
-              <span className="price">
-                {l.kind === "want" ? "up to " : ""}
-                {eur(l.price_cents)}
-              </span>
-            </div>
-            <div className="meta">
-              {fmtDate(l.event_date)} · {l.quantity} ticket
-              {l.quantity > 1 ? "s" : ""} · {l.profiles?.pseudo ?? "—"}
-            </div>
-          </Link>
+          <ListingCard key={l.id} l={l} />
         ))}
       </div>
     </>

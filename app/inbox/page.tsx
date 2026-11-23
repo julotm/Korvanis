@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { fmtDate } from "@/lib/util";
+import { useT } from "@/lib/i18n";
 
 type Conv = {
   id: string;
@@ -16,6 +17,7 @@ type Conv = {
 
 export default function Inbox() {
   const router = useRouter();
+  const { t, lang } = useT();
   const [uid, setUid] = useState<string | null>(null);
   const [items, setItems] = useState<Conv[] | null>(null);
 
@@ -35,19 +37,19 @@ export default function Inbox() {
 
   return (
     <>
-      <h1>Inbox</h1>
-      {items === null && <p className="empty">Loading…</p>}
-      {items && items.length === 0 && (
-        <p className="empty">No conversations yet.</p>
-      )}
+      <h1>{t("inbox_title")}</h1>
+      {items === null && <p className="empty">{t("loading")}</p>}
+      {items && items.length === 0 && <p className="empty">{t("inbox_empty")}</p>}
       {items?.map((c) => (
         <Link key={c.id} href={`/chat/${c.id}`} className="card">
           <div className="top">
             <span className="club">{c.listing?.club}</span>
-            <span className="meta">{c.listing && fmtDate(c.listing.event_date)}</span>
+            <span className="meta">
+              {c.listing && fmtDate(c.listing.event_date, lang)}
+            </span>
           </div>
           <div className="meta">
-            with {uid === c.owner_id ? c.other?.pseudo : c.owner?.pseudo}
+            {t("with")} {uid === c.owner_id ? c.other?.pseudo : c.owner?.pseudo}
           </div>
         </Link>
       ))}

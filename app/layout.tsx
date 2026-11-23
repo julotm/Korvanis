@@ -1,11 +1,26 @@
 import "./globals.css";
 import type { Metadata, Viewport } from "next";
 import Nav from "@/components/Nav";
+import Footer from "@/components/Footer";
+import { LangProvider } from "@/lib/i18n";
+
+const SITE = "https://korvanis-delta.vercel.app";
+const DESC =
+  "Buy and sell nightclub entries between students in Barcelona. Anonymous, simple, no commission.";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE),
   title: "Korvanis — club tickets, student to student",
-  description:
-    "Buy and sell nightclub entries between students. Anonymous, simple, no commission (for now).",
+  description: DESC,
+  openGraph: {
+    title: "Korvanis — club tickets, student to student",
+    description: DESC,
+    url: SITE,
+    siteName: "Korvanis",
+    images: [{ url: "/og.png", width: 1080, height: 1080 }],
+    type: "website",
+  },
+  twitter: { card: "summary", images: ["/og.png"] },
 };
 
 export const viewport: Viewport = {
@@ -22,13 +37,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <Nav />
-        <main>{children}</main>
-        <footer>
-          Korvanis is a meeting place between students. We don&apos;t sell
-          tickets and we don&apos;t take any commission. Resell at face value
-          at most.
-        </footer>
+        <LangProvider>
+          <Nav />
+          <main>{children}</main>
+          <Footer />
+        </LangProvider>
       </body>
     </html>
   );
