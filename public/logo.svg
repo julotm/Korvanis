@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+<rect width="512" height="512" rx="112" fill="#14122B"/>
+<defs><mask id="notch"><rect width="512" height="512" fill="white"/><circle cx="96" cy="256" r="30" fill="black"/><circle cx="416" cy="256" r="30" fill="black"/></mask></defs>
+<g transform="rotate(-10 256 256)">
+<rect x="96" y="150" width="320" height="212" rx="34" fill="#F4F1FF" mask="url(#notch)"/>
+<g stroke="#14122B" stroke-width="28" stroke-linecap="round" stroke-linejoin="round" fill="none"><path d="M176 204 V308"/><path d="M176 256 L252 204"/><path d="M176 256 L252 308"/></g>
+<path d="M322 176 V336" stroke="#14122B" stroke-width="6" stroke-linecap="round" stroke-dasharray="2 14" fill="none"/>
+<circle cx="368" cy="256" r="16" fill="#FF4D6D"/>
+</g>
+</svg>

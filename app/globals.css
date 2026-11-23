@@ -1,0 +1,80 @@
+:root {
+  --navy: #14122b;
+  --paper: #f4f1ff;
+  --coral: #ff4d6d;
+  --card: #ffffff;
+  --muted: #6b6785;
+  --line: #e2ddf5;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: var(--paper);
+  color: var(--navy);
+  line-height: 1.45;
+}
+a { color: inherit; }
+main { max-width: 640px; margin: 0 auto; padding: 16px 16px 80px; }
+footer { max-width: 640px; margin: 0 auto; padding: 0 16px 40px; color: var(--muted); font-size: 12px; }
+.nav {
+  background: var(--navy); color: var(--paper);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 16px; position: sticky; top: 0; z-index: 10;
+}
+.nav nav { display: flex; gap: 14px; align-items: center; font-size: 14px; }
+.nav a { text-decoration: none; }
+.brand { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 18px; }
+.brand img { border-radius: 8px; }
+h1 { font-size: 24px; margin: 8px 0 4px; }
+h2 { font-size: 18px; margin: 20px 0 8px; }
+.sub { color: var(--muted); margin: 0 0 16px; }
+.btn, button.btn {
+  display: inline-block; background: var(--coral); color: #fff; border: 0;
+  padding: 12px 18px; border-radius: 12px; font-weight: 600; font-size: 16px;
+  text-decoration: none; cursor: pointer; text-align: center;
+}
+.btn.small { padding: 6px 12px; font-size: 14px; border-radius: 10px; }
+.btn.ghost { background: transparent; color: var(--navy); border: 1.5px solid var(--navy); }
+.btn:disabled { opacity: .5; cursor: default; }
+.btn.block { display: block; width: 100%; }
+button.link { background: none; border: 0; color: inherit; cursor: pointer; font-size: 14px; padding: 0; text-decoration: underline; }
+.card {
+  display: block; background: var(--card); border: 1px solid var(--line);
+  border-radius: 14px; padding: 14px; margin-bottom: 10px; text-decoration: none;
+}
+.card .top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.card .club { font-weight: 700; font-size: 17px; }
+.price { font-weight: 700; font-size: 17px; white-space: nowrap; }
+.meta { color: var(--muted); font-size: 14px; margin-top: 2px; }
+.tag { display: inline-block; font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 999px; margin-right: 6px; }
+.tag.sell { background: #ffe0e6; color: #b3203f; }
+.tag.want { background: #dcd7ff; color: #3b2fa0; }
+.tabs { display: flex; gap: 8px; margin: 12px 0; }
+.tabs button {
+  flex: 1; padding: 10px; border-radius: 12px; border: 1.5px solid var(--navy);
+  background: transparent; font-weight: 600; font-size: 15px; cursor: pointer; color: var(--navy);
+}
+.tabs button.on { background: var(--navy); color: var(--paper); }
+form label { display: block; font-weight: 600; font-size: 14px; margin: 12px 0 4px; }
+input, select, textarea {
+  width: 100%; padding: 12px; border-radius: 10px; border: 1.5px solid var(--line);
+  font-size: 16px; background: #fff; color: var(--navy); font-family: inherit;
+}
+textarea { min-height: 80px; resize: vertical; }
+.err { color: #b3203f; font-size: 14px; margin: 8px 0; }
+.ok { color: #1c7a4a; font-size: 14px; margin: 8px 0; }
+.notice { background: #fff; border: 1px dashed var(--coral); border-radius: 12px; padding: 10px 12px; font-size: 14px; margin: 12px 0; }
+.empty { text-align: center; color: var(--muted); padding: 32px 0; }
+.chat { display: flex; flex-direction: column; gap: 8px; margin: 12px 0; }
+.msg { max-width: 80%; padding: 9px 12px; border-radius: 14px; background: #fff; border: 1px solid var(--line); word-wrap: break-word; white-space: pre-wrap; }
+.msg.me { align-self: flex-end; background: var(--navy); color: var(--paper); border-color: var(--navy); }
+.sendbar { position: sticky; bottom: 0; background: var(--paper); padding: 8px 0; display: flex; gap: 8px; }
+.sendbar input { flex: 1; }
+.row { display: flex; gap: 10px; }
+.row > * { flex: 1; }
+.stars button { background: none; border: 0; font-size: 28px; cursor: pointer; padding: 0 2px; color: #c9c3e6; }
+.stars button.on { color: var(--coral); }
+.hero { background: var(--navy); color: var(--paper); border-radius: 16px; padding: 18px; margin-bottom: 8px; }
+.hero h1 { margin: 0 0 6px; font-size: 22px; }
+.hero p { margin: 0 0 12px; color: #cfc9ee; }
