@@ -5,6 +5,10 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { eur, fmtDate, Listing } from "@/lib/util";
 import { useT } from "@/lib/i18n";
+import { notify } from "@/lib/notify";
+import BigTicket from "@/components/BigTicket";
+import PersonCard from "@/components/PersonCard";
+import ListingCard from "@/components/ListingCard";
 
 export default function ListingPage() {
   const { id } = useParams<{ id: string }>();
@@ -19,6 +23,7 @@ export default function ListingPage() {
   const [reason, setReason] = useState("");
   const [reported, setReported] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [more, setMore] = useState<Listing[]>([]);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => setUid(data.session?.user.id ?? null));
@@ -34,6 +39,17 @@ export default function ListingPage() {
         }
         const listing = data as unknown as Listing;
         setL(listing);
+        const today = new Date().toISOString().slice(0, 10);
+        supabase
+          .from("listings")
+          .select("*, profiles(pseudo)")
+          .eq("status", "open")
+          .eq("club", listing.club)
+          .gte("event_date", today)
+          .neq("id", listing.id)
+          .order("event_date", { ascending: true })
+          .limit(3)
+          .then(({ data: m }) => setMore((m as unknown as Listing[]) || []));
         const { data: rv } = await supabase
           .from("reviews")
           .select("rating")
@@ -65,7 +81,10 @@ export default function ListingPage() {
       .single();
     setBusy(false);
     if (error) setError(error.message);
-    else router.push(`/chat/${data.id}`);
+    else {
+      notify(data.id, "new_conversation");
+      router.push(`/chat/${data.id}`);
+    }
   }
 
   async function close() {
@@ -88,6 +107,8 @@ export default function ListingPage() {
 
   if (!l) return <p className="empty">{error ? t("not_found") : t("loading")}</p>;
   const mine = uid === l.user_id;
+  const past = l.event_date < new Date().toISOString().slice(0, 10);
+  const isOpen = l.status === "open" && !past;
 
   const link = typeof window !== "undefined" ? window.location.href : "";
   const shareText =
@@ -115,43 +136,36 @@ export default function ListingPage() {
       <span className={`tag ${l.kind}`}>
         {l.kind === "sell" ? t("for_sale_tag") : t("wanted_tag")}
       </span>
-      <h1>{l.club}</h1>
-      <p className="sub">
-        {fmtDate(l.event_date, lang)} ·{" "}
-        {t(l.quantity > 1 ? "tix_many" : "tix_one", { n: l.quantity })}
-      </p>
-      <p className="price" style={{ fontSize: 28, margin: "8px 0" }}>
-        {l.kind === "want" ? t("upto") + " " : ""}
-        {eur(l.price_cents)}
-      </p>
-      {l.face_cents !== null && (
-        <p className="meta">
-          {t("face_value")} {eur(l.face_cents)}
-        </p>
-      )}
-      {l.note && <p>{l.note}</p>}
-      <p className="meta">
-        {t("posted_by")} <b>{l.profiles?.pseudo}</b>
-        {rating
-          ? ` · ★ ${rating.avg.toFixed(1)} (${rating.n})`
-          : ` · ${t("no_reviews")}`}
-      </p>
+      <BigTicket
+        club={l.club}
+        date={l.event_date}
+        price_cents={l.price_cents}
+        face_cents={l.face_cents}
+        quantity={l.quantity}
+        kind={l.kind}
+      />
+      {l.note && <p style={{ fontWeight: 600 }}>{l.note}</p>}
+      <PersonCard
+        userId={l.user_id}
+        pseudo={l.profiles?.pseudo ?? "—"}
+        label={l.kind === "sell" ? t("seller_label") : t("buyer_label")}
+      />
 
-      {l.status === "closed" && <p className="notice">{t("closed_notice")}</p>}
+      {!isOpen && <p className="notice">{t("closed_notice")}</p>}
       {error && error !== "notfound" && <p className="err">{error}</p>}
 
-      {l.status === "open" && !mine && (
+      {isOpen && !mine && (
         <button className="btn block" onClick={contact} disabled={busy}>
           {l.kind === "sell" ? t("interested") : t("i_have_one")}
         </button>
       )}
-      {mine && l.status === "open" && (
+      {mine && isOpen && (
         <button className="btn ghost block" onClick={close}>
           {t("close_listing")}
         </button>
       )}
 
-      {l.status === "open" && (
+      {isOpen && (
         <div className="sharebar">
           <a
             className="btn wa"
@@ -189,6 +203,24 @@ export default function ListingPage() {
           )}
         </p>
       )}
+    
+      {more.length > 0 && (
+        <>
+          <h2>{t("more_club", { club: l.club })}</h2>
+          {more.map((m) => (
+            <ListingCard key={m.id} l={m} />
+          ))}
+        </>
+      )}
+
+      <div className="rules">
+        <h3>{t("rules_title")}</h3>
+        <ul>
+          <li>{t("rule1")}</li>
+          <li>{t("rule2")}</li>
+          <li>{t("rule3")}</li>
+        </ul>
+      </div>
     </>
   );
 }

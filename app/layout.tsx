@@ -2,6 +2,7 @@ import "./globals.css";
 import type { Metadata, Viewport } from "next";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
+import Marquee from "@/components/Marquee";
 import { LangProvider } from "@/lib/i18n";
 
 const SITE = "https://korvanis-delta.vercel.app";
@@ -26,7 +27,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#14122B",
+  themeColor: "#111111",
 };
 
 export default function RootLayout({
@@ -39,6 +40,7 @@ export default function RootLayout({
       <body>
         <LangProvider>
           <Nav />
+          <Marquee />
           <main>{children}</main>
           <Footer />
         </LangProvider>

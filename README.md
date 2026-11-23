@@ -10,3 +10,9 @@ Site simple : annonces (vendre / chercher), chat anonyme avec numéros masqués,
 
 ## Tester en local (optionnel)
 npm install && npm run dev
+
+## Mise à jour 2
+- Colle `supabase/migration_2.sql` dans Supabase > SQL Editor > Run (une seule fois).
+- Notifications par email (optionnel) : ajoute dans Vercel > Settings > Environment Variables
+  SUPABASE_SERVICE_ROLE_KEY, GMAIL_USER, GMAIL_APP_PASSWORD, puis redéploie.
+  Sans ces variables, le site marche normalement, il n'envoie juste pas d'email.

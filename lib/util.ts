@@ -32,3 +32,10 @@ export type Listing = {
   created_at: string;
   profiles?: { pseudo: string } | null;
 };
+
+export function daysUntil(d: string): number {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const target = new Date(d + "T00:00:00");
+  return Math.round((target.getTime() - today.getTime()) / 86400000);
+}

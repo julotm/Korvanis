@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { useT } from "@/lib/i18n";
+import { normalizePhone } from "@/lib/phone";
 
 export default function Login() {
   const router = useRouter();
@@ -11,6 +12,7 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [pseudo, setPseudo] = useState("");
+  const [phone, setPhone] = useState("");
   const [error, setError] = useState("");
   const [info, setInfo] = useState("");
   const [busy, setBusy] = useState(false);
@@ -27,10 +29,16 @@ export default function Login() {
         setBusy(false);
         return;
       }
+      const ph = normalizePhone(phone);
+      if (!ph) {
+        setError(t("phone_invalid"));
+        setBusy(false);
+        return;
+      }
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
-        options: { data: { pseudo: p } },
+        options: { data: { pseudo: p, phone: ph } },
       });
       if (error) {
         setError(
@@ -63,6 +71,19 @@ export default function Login() {
               placeholder={t("nickname_ph")}
               required
             />
+          </>
+        )}
+        {mode === "signup" && (
+          <>
+            <label>{t("phone_label")}</label>
+            <input
+              type="tel"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              placeholder={t("phone_ph")}
+              required
+            />
+            <p className="meta">{t("phone_hint")}</p>
           </>
         )}
         <label>{t("email")}</label>

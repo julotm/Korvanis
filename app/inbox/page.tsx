@@ -39,7 +39,11 @@ export default function Inbox() {
     <>
       <h1>{t("inbox_title")}</h1>
       {items === null && <p className="empty">{t("loading")}</p>}
-      {items && items.length === 0 && <p className="empty">{t("inbox_empty")}</p>}
+      {items && items.length === 0 && (
+        <div className="emptybox">
+          <div className="big">{t("inbox_empty")}</div>
+        </div>
+      )}
       {items?.map((c) => (
         <Link key={c.id} href={`/chat/${c.id}`} className="card">
           <div className="top">

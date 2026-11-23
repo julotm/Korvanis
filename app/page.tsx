@@ -6,6 +6,7 @@ import { Listing } from "@/lib/util";
 import { CLUBS, OTHER } from "@/lib/clubs";
 import { useT } from "@/lib/i18n";
 import ListingCard from "@/components/ListingCard";
+import Faq from "@/components/Faq";
 
 export default function Home() {
   const { t } = useT();
@@ -64,6 +65,19 @@ export default function Home() {
           {t("hero_cta")}
         </Link>
       </div>
+
+      <div className="stickers">
+        <span className="sticker">{t("stk1")}</span>
+        <span className="sticker">{t("stk2")}</span>
+        <span className="sticker">{t("stk3")}</span>
+      </div>
+      {items && (
+        <div className="statsbar">
+          <span>{t("stats_live", { n: items.filter((l) => l.kind === "sell").length })}</span>
+          <span>{t("stats_wanted", { n: items.filter((l) => l.kind === "want").length })}</span>
+          <span>{t("stats_clubs", { n: new Set(items.map((l) => l.club)).size })}</span>
+        </div>
+      )}
 
       <div className="steps">
         {[1, 2, 3].map((n) => (
@@ -137,8 +151,9 @@ export default function Home() {
         {items === null && !error && <p className="empty">{t("loading")}</p>}
         {items && shown.length === 0 && (
           <div className="emptybox">
+            <div className="big">{t("empty_all")}</div>
             <p>
-              {club ? t("empty_club", { club: clubLabel }) : t("empty_all")}
+              {club ? t("empty_club", { club: clubLabel }) : ""}
               <br />
               {t("empty_sub")}
             </p>
@@ -156,6 +171,18 @@ export default function Home() {
           <ListingCard key={l.id} l={l} />
         ))}
       </div>
+    
+      <h2>{t("why_title")}</h2>
+      <div className="why">
+        {[1, 2, 3].map((n) => (
+          <div key={n}>
+            <b>{t(`why${n}_t` as "why1_t")}</b>
+            {t(`why${n}_d` as "why1_d")}
+          </div>
+        ))}
+      </div>
+
+      <Faq />
     </>
   );
 }
