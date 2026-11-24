@@ -39,4 +39,5 @@ export const CLUB_COORDS: Record<string, [number, number]> = {
   "Bling Bling": [41.3946, 2.1469],
   Jamboree: [41.3800, 2.1753],
   Downtown: [41.3862, 2.1130], // Av. Doctor Marañón 17 (Les Corts), position approximative
+  Exclusive: [41.3868, 2.1105], // C/ de Santa Caterina de Siena 29 (Les Corts/Pedralbes), position TRÈS approximative : à corriger
 };
