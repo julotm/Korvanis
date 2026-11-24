@@ -38,4 +38,5 @@ export const CLUB_COORDS: Record<string, [number, number]> = {
   "City Hall": [41.3877, 2.1700],
   "Bling Bling": [41.3946, 2.1469],
   Jamboree: [41.3800, 2.1753],
+  Downtown: [41.3862, 2.1130], // Av. Doctor Marañón 17 (Les Corts), position approximative
 };
