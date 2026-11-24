@@ -326,6 +326,8 @@ export default function Chat() {
           <li>{t("safety1")}</li>
           <li>{t("safety2")}</li>
           <li>{t("safety3")}</li>
+          <li>{t("safety5")}</li>
+          <li>{t("safety6")}</li>
           <li>{t("safety4")}</li>
         </ul>
       </div>

@@ -12,6 +12,7 @@ export default function NewListing() {
   const [kind, setKind] = useState<"sell" | "want">("sell");
   const [clubSel, setClubSel] = useState("");
   const [clubOther, setClubOther] = useState("");
+  const [eventSuggestions, setEventSuggestions] = useState<string[]>([]);
   const [eventName, setEventName] = useState("");
   const [date, setDate] = useState("");
   const [face, setFace] = useState("");
@@ -31,6 +32,23 @@ export default function NewListing() {
     const c = p.get("club");
     if (c && CLUBS.includes(c)) setClubSel(c);
   }, [router]);
+
+  useEffect(() => {
+    const today = new Date().toISOString().slice(0, 10);
+    supabase
+      .from("listings")
+      .select("event_name")
+      .eq("status", "open")
+      .gte("event_date", today)
+      .not("event_name", "is", null)
+      .limit(100)
+      .then(({ data }) => {
+        const names = Array.from(
+          new Set((data || []).map((r: { event_name: string | null }) => r.event_name as string))
+        );
+        setEventSuggestions(names);
+      });
+  }, []);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -105,7 +123,13 @@ export default function NewListing() {
           onChange={(e) => setEventName(e.target.value)}
           placeholder={t("event_ph")}
           maxLength={80}
+          list="event-names"
         />
+        <datalist id="event-names">
+          {eventSuggestions.map((n) => (
+            <option key={n} value={n} />
+          ))}
+        </datalist>
         <p className="meta">{t("event_hint")}</p>
 
         <label>{t("night_date")}</label>

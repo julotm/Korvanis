@@ -43,6 +43,11 @@ export default function PersonCard({
         <div className="p-name">
           {label ? <span className="p-label">{label}</span> : null}
           {pseudo}
+          {since && Date.now() - new Date(since).getTime() < 14 * 86400000 ? (
+            <span className="p-label" style={{ marginLeft: 8, marginRight: 0 }}>
+              {t("new_account")}
+            </span>
+          ) : null}
         </div>
         <div className="meta">
           {avg !== null
