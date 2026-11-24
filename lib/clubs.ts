@@ -15,6 +15,8 @@ export const CLUBS = [
   "City Hall",
   "Bling Bling",
   "Jamboree",
+  "Downtown",
+  "Exclusive",
 ];
 export const OTHER = "__other__";
 
