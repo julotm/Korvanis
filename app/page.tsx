@@ -214,10 +214,10 @@ export default function Home() {
       <div className="sec-title">{t("photos_title")}</div>
       <div className="photos">
         {[
-          ["stage", "Red stage lights"],
-          ["dj", "DJ booth"],
-          ["crowd", "Crowd under blue lasers"],
-          ["fire", "Fire dancer by the pool"],
+          ["downtown", "Crowd under blue lasers"],
+          ["phones", "Crowd filming a red stage"],
+          ["brain", "Red light sculpture above the dance floor"],
+          ["lights", "Red, orange and blue lights"],
         ].map(([f, alt]) => (
           <figure key={f}>
             {/* eslint-disable-next-line @next/next/no-img-element */}

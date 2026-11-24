@@ -181,7 +181,7 @@ textarea { min-height: 84px; resize: vertical; border: 1px solid var(--bordeaux)
 /* ---------- photo row ---------- */
 .photos { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 6px 0 0; }
 .photos figure { margin: 0; border: 1px solid var(--bordeaux); padding: 5px; background: var(--card); }
-.photos img { display: block; width: 100%; aspect-ratio: 4/5; object-fit: cover; }
+.photos img { display: block; width: 100%; aspect-ratio: 3/4; object-fit: cover; }
 
 /* ---------- chat ---------- */
 .chat { display: flex; flex-direction: column; gap: 8px; margin: 16px 0; }
