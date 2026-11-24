@@ -18,7 +18,7 @@ export async function generateMetadata({
     const sb = createClient(url, key);
     const { data } = await sb
       .from("listings")
-      .select("club, event_date, price_cents, kind")
+      .select("club, event_name, event_date, price_cents, kind")
       .eq("id", id)
       .maybeSingle();
     if (!data) return {};
@@ -31,7 +31,7 @@ export async function generateMetadata({
       "en-GB",
       { weekday: "short", day: "numeric", month: "short" }
     );
-    const title = `${data.kind === "sell" ? "For sale" : "Wanted"}: ${data.club} · ${date} · ${price}`;
+    const title = `${data.kind === "sell" ? "For sale" : "Wanted"}: ${data.event_name ? data.event_name + " · " : ""}${data.club} · ${date} · ${price}`;
     const description = "Club tickets between students on Korvanis. No commission.";
     return {
       title,

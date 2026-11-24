@@ -18,6 +18,11 @@ export default function Home() {
   const [error, setError] = useState("");
 
   useEffect(() => {
+    const c = new URLSearchParams(window.location.search).get("club");
+    if (c && CLUBS.includes(c)) setClub(c);
+  }, []);
+
+  useEffect(() => {
     const today = new Date().toISOString().slice(0, 10);
     supabase
       .from("listings")
@@ -42,7 +47,20 @@ export default function Home() {
     return c;
   }, [ofKind]);
 
-  const shown = ofKind.filter((l) => !club || bucket(l) === club);
+  const needle = q.trim().toLowerCase();
+  const shown = ofKind.filter(
+    (l) =>
+      (!club || bucket(l) === club) &&
+      (!needle ||
+        `${l.club} ${l.event_name ?? ""}`.toLowerCase().includes(needle))
+  );
+  const eventNames = Array.from(
+    new Set(
+      (items || [])
+        .map((l) => l.event_name)
+        .filter((n): n is string => !!n && n.toLowerCase().includes(needle))
+    )
+  ).slice(0, 5);
   const sorted = [...CLUBS].sort((a, b) => (counts[b] || 0) - (counts[a] || 0));
   const suggestions = CLUBS.filter((c) =>
     c.toLowerCase().includes(q.trim().toLowerCase())
@@ -58,19 +76,40 @@ export default function Home() {
 
   return (
     <>
-      <div className="hero">
-        <h1>{t("hero_title")}</h1>
-        <p>{t("hero_sub")}</p>
-        <Link href="/new" className="btn">
-          {t("hero_cta")}
-        </Link>
+      <section className="hero full">
+        <div className="hero-in">
+          <p className="eyebrow">{t("tagline")}</p>
+          <h1 className="headline">{t("hero_title")}</h1>
+          <p className="deck">{t("hero_sub")}</p>
+          <div className="hero-cta">
+            <Link href="/new" className="btn pink">
+              {t("hero_cta")}
+            </Link>
+            <Link href="/map" className="btn line">
+              {t("nav_map")}
+            </Link>
+          </div>
+        </div>
+      </section>
+      <div className="stripband full" />
+
+      <div className="brief">
+        <span className="brief-label">{t("in_brief")}</span>
+        <span>{t("stk1")}</span>
+        <span>{t("stk2")}</span>
+        <span>{t("stk3")}</span>
       </div>
 
-      <div className="stickers">
-        <span className="sticker">{t("stk1")}</span>
-        <span className="sticker">{t("stk2")}</span>
-        <span className="sticker">{t("stk3")}</span>
+      <div className="steps">
+        {[1, 2, 3].map((n) => (
+          <div className="step" key={n}>
+            <i>{n}</i>
+            <b>{t(`step${n}_t` as "step1_t")}</b>
+            {t(`step${n}_d` as "step1_d")}
+          </div>
+        ))}
       </div>
+
       {items && (
         <div className="statsbar">
           <span>{t("stats_live", { n: items.filter((l) => l.kind === "sell").length })}</span>
@@ -78,18 +117,6 @@ export default function Home() {
           <span>{t("stats_clubs", { n: new Set(items.map((l) => l.club)).size })}</span>
         </div>
       )}
-
-      <div className="steps">
-        {[1, 2, 3].map((n) => (
-          <div className="step" key={n}>
-            <b>
-              <i>{n}</i>
-              {t(`step${n}_t` as "step1_t")}
-            </b>
-            {t(`step${n}_d` as "step1_d")}
-          </div>
-        ))}
-      </div>
 
       <div className="tabs">
         <button className={kind === "sell" ? "on" : ""} onClick={() => setKind("sell")}>
@@ -108,12 +135,24 @@ export default function Home() {
           onFocus={() => setFocus(true)}
           onBlur={() => setTimeout(() => setFocus(false), 150)}
         />
-        {focus && suggestions.length > 0 && (
+        {focus && (suggestions.length > 0 || eventNames.length > 0) && (
           <div className="suggest">
             {suggestions.map((c) => (
               <button key={c} onMouseDown={() => pick(c)}>
                 {c}
                 <span>{counts[c] || 0}</span>
+              </button>
+            ))}
+            {eventNames.map((n) => (
+              <button
+                key={n}
+                onMouseDown={() => {
+                  setQ(n);
+                  setFocus(false);
+                }}
+              >
+                {n}
+                <span>event</span>
               </button>
             ))}
           </div>
@@ -167,22 +206,30 @@ export default function Home() {
             </div>
           </div>
         )}
-        {shown.map((l) => (
-          <ListingCard key={l.id} l={l} />
+        {shown.map((l, i) => (
+          <ListingCard key={l.id} l={l} i={i} />
         ))}
       </div>
     
-      <h2>{t("why_title")}</h2>
-      <div className="why">
-        {[1, 2, 3].map((n) => (
-          <div key={n}>
-            <b>{t(`why${n}_t` as "why1_t")}</b>
-            {t(`why${n}_d` as "why1_d")}
-          </div>
+      <div className="sec-title">{t("photos_title")}</div>
+      <div className="photos">
+        {[
+          ["stage", "Red stage lights"],
+          ["dj", "DJ booth"],
+          ["crowd", "Crowd under blue lasers"],
+          ["fire", "Fire dancer by the pool"],
+        ].map(([f, alt]) => (
+          <figure key={f}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={`/photos/${f}.jpg`} alt={alt} loading="lazy" />
+          </figure>
         ))}
       </div>
 
-      <Faq />
+      <details className="faqbox">
+        <summary>{t("faq_toggle")}</summary>
+        <Faq showTitle={false} />
+      </details>
     </>
   );
 }

@@ -138,6 +138,7 @@ export default function ListingPage() {
       </span>
       <BigTicket
         club={l.club}
+        eventName={l.event_name}
         date={l.event_date}
         price_cents={l.price_cents}
         face_cents={l.face_cents}

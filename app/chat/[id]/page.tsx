@@ -17,7 +17,7 @@ type Conv = {
   other_id: string;
   owner_ok: boolean;
   other_ok: boolean;
-  listing: { club: string; event_date: string; price_cents: number; face_cents: number | null; quantity: number; kind: "sell" | "want" } | null;
+  listing: { club: string; event_name: string | null; event_date: string; price_cents: number; face_cents: number | null; quantity: number; kind: "sell" | "want" } | null;
   owner: { pseudo: string } | null;
   other: { pseudo: string } | null;
 };
@@ -47,7 +47,7 @@ export default function Chat() {
     const { data: c } = await supabase
       .from("conversations")
       .select(
-        "*, listing:listings(club, event_date, price_cents, face_cents, quantity, kind), owner:profiles!conversations_owner_id_fkey(pseudo), other:profiles!conversations_other_id_fkey(pseudo)"
+        "*, listing:listings(club, event_name, event_date, price_cents, face_cents, quantity, kind), owner:profiles!conversations_owner_id_fkey(pseudo), other:profiles!conversations_other_id_fkey(pseudo)"
       )
       .eq("id", id)
       .single();
@@ -181,6 +181,7 @@ export default function Chat() {
       {conv.listing && (
         <BigTicket
           club={conv.listing.club}
+          eventName={conv.listing.event_name}
           date={conv.listing.event_date}
           price_cents={conv.listing.price_cents}
           face_cents={conv.listing.face_cents}

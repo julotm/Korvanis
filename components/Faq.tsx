@@ -2,11 +2,11 @@
 import { useT } from "@/lib/i18n";
 import { CONTACT_EMAIL } from "@/lib/config";
 
-export default function Faq() {
+export default function Faq({ showTitle = true }: { showTitle?: boolean }) {
   const { t } = useT();
   return (
     <section className="faq">
-      <h2>{t("faq_title")}</h2>
+      {showTitle && <h2>{t("faq_title")}</h2>}
       {[1, 2, 3, 4, 5, 6].map((n) => (
         <div className="faq-item" key={n}>
           <h3>{t(`faq${n}_q` as "faq1_q")}</h3>

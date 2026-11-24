@@ -1,8 +1,11 @@
+import "@fontsource/cormorant-garamond/latin-500.css";
+import "@fontsource/cormorant-garamond/latin-600.css";
+import "@fontsource/cormorant-garamond/latin-500-italic.css";
+import "@fontsource-variable/hanken-grotesk/wght.css";
 import "./globals.css";
 import type { Metadata, Viewport } from "next";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
-import Marquee from "@/components/Marquee";
 import { LangProvider } from "@/lib/i18n";
 
 const SITE = "https://korvanis-delta.vercel.app";
@@ -18,16 +21,16 @@ export const metadata: Metadata = {
     description: DESC,
     url: SITE,
     siteName: "Korvanis",
-    images: [{ url: "/og.png", width: 1080, height: 1080 }],
+    images: [{ url: "/og.png", width: 1200, height: 630 }],
     type: "website",
   },
-  twitter: { card: "summary", images: ["/og.png"] },
+  twitter: { card: "summary_large_image", images: ["/og.png"] },
 };
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#111111",
+  themeColor: "#5b1426",
 };
 
 export default function RootLayout({
@@ -40,7 +43,6 @@ export default function RootLayout({
       <body>
         <LangProvider>
           <Nav />
-          <Marquee />
           <main>{children}</main>
           <Footer />
         </LangProvider>

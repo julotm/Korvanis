@@ -12,6 +12,7 @@ export default function NewListing() {
   const [kind, setKind] = useState<"sell" | "want">("sell");
   const [clubSel, setClubSel] = useState("");
   const [clubOther, setClubOther] = useState("");
+  const [eventName, setEventName] = useState("");
   const [date, setDate] = useState("");
   const [face, setFace] = useState("");
   const [price, setPrice] = useState("");
@@ -52,6 +53,7 @@ export default function NewListing() {
         user_id: uid,
         kind,
         club,
+        event_name: eventName.trim() || null,
         event_date: date,
         price_cents: priceC,
         face_cents: faceC,
@@ -96,6 +98,15 @@ export default function NewListing() {
             required
           />
         )}
+
+        <label>{t("event_label")}</label>
+        <input
+          value={eventName}
+          onChange={(e) => setEventName(e.target.value)}
+          placeholder={t("event_ph")}
+          maxLength={80}
+        />
+        <p className="meta">{t("event_hint")}</p>
 
         <label>{t("night_date")}</label>
         <input type="date" value={date} onChange={(e) => setDate(e.target.value)} required />

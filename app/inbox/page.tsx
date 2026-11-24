@@ -10,7 +10,7 @@ type Conv = {
   id: string;
   owner_id: string;
   other_id: string;
-  listing: { club: string; event_date: string; kind: string } | null;
+  listing: { club: string; event_name: string | null; event_date: string; kind: string } | null;
   owner: { pseudo: string } | null;
   other: { pseudo: string } | null;
 };
@@ -28,7 +28,7 @@ export default function Inbox() {
       const { data: rows } = await supabase
         .from("conversations")
         .select(
-          "id, owner_id, other_id, listing:listings(club, event_date, kind), owner:profiles!conversations_owner_id_fkey(pseudo), other:profiles!conversations_other_id_fkey(pseudo)"
+          "id, owner_id, other_id, listing:listings(club, event_name, event_date, kind), owner:profiles!conversations_owner_id_fkey(pseudo), other:profiles!conversations_other_id_fkey(pseudo)"
         )
         .order("created_at", { ascending: false });
       setItems((rows as unknown as Conv[]) || []);
@@ -47,7 +47,10 @@ export default function Inbox() {
       {items?.map((c) => (
         <Link key={c.id} href={`/chat/${c.id}`} className="card">
           <div className="top">
-            <span className="club">{c.listing?.club}</span>
+            <span className="club">
+              {c.listing?.event_name ? `${c.listing.event_name} · ` : ""}
+              {c.listing?.club}
+            </span>
             <span className="meta">
               {c.listing && fmtDate(c.listing.event_date, lang)}
             </span>

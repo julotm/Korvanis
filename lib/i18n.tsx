@@ -14,7 +14,7 @@ const en = {
   step2_t: "Chat", step2_d: "Talk anonymously in the app.",
   step3_t: "Meet", step3_d: "Agree, hand over the ticket, rate each other.",
   tab_sell: "For sale", tab_want: "Wanted",
-  search_ph: "Search a club", all: "All", other: "Other", loading: "Loading…",
+  search_ph: "Search a club or an event", all: "All", other: "Other", loading: "Loading…",
   empty_club: "No tickets for {club} yet.", empty_all: "Nothing here yet.",
   empty_sub: "Be the first to post!",
   empty_cta_sell: "Sell a ticket", empty_cta_want: "Ask for a ticket",
@@ -85,6 +85,10 @@ const en = {
   rules_title: "Community rules",
   rule1: "Resell at face value at most.", rule2: "Only post tickets you really have.", rule3: "Be nice. Scammers get banned.",
   more_club: "More tickets for {club}", seller_label: "Seller", buyer_label: "Looking for",
+  event_label: "Event name (optional)", event_ph: "Halloween, End of exams…", event_hint: "Helps people find your ticket by the name of the night.",
+  faq_toggle: "Frequently asked questions", at_club: "at {club}",
+  nav_map: "Map", map_title: "Tickets on the map", map_sub: "Every club in Barcelona with live tickets. Tap a pin to see what is for sale.", map_see: "See the tickets", map_none: "No tickets right now", photos_title: "Barcelona nights",
+  tagline: "The student ticket exchange", in_brief: "In brief", colophon: "Printed in Barcelona, by students.",
   lang_name: "English",
 };
 type Dict = typeof en;
@@ -100,7 +104,7 @@ const fr: Dict = {
   step2_t: "Discute", step2_d: "Parle anonymement dans l'app.",
   step3_t: "Retrouvez-vous", step3_d: "Mettez-vous d'accord, passez le billet, notez-vous.",
   tab_sell: "À vendre", tab_want: "Recherchés",
-  search_ph: "Chercher une boîte", all: "Toutes", other: "Autre", loading: "Chargement…",
+  search_ph: "Chercher une boîte ou un événement", all: "Toutes", other: "Autre", loading: "Chargement…",
   empty_club: "Aucun billet pour {club} pour l'instant.", empty_all: "Rien ici pour l'instant.",
   empty_sub: "Sois le premier à publier !",
   empty_cta_sell: "Vendre un billet", empty_cta_want: "Demander un billet",
@@ -171,6 +175,10 @@ const fr: Dict = {
   rules_title: "Règles de la communauté",
   rule1: "Revends au prix d'origine maximum.", rule2: "Ne publie que des billets que tu as vraiment.", rule3: "Sois sympa. Les arnaqueurs sont bannis.",
   more_club: "Plus de billets pour {club}", seller_label: "Vendeur", buyer_label: "Cherche",
+  event_label: "Nom de l'événement (facultatif)", event_ph: "Halloween, End of exams…", event_hint: "Aide les gens à trouver ton billet grâce au nom de la soirée.",
+  faq_toggle: "Questions fréquentes", at_club: "à {club}",
+  nav_map: "Carte", map_title: "Les billets sur la carte", map_sub: "Tous les clubs de Barcelone avec des billets en ce moment. Touche un point pour voir ce qui est en vente.", map_see: "Voir les billets", map_none: "Aucun billet pour le moment", photos_title: "Nuits de Barcelone",
+  tagline: "La bourse aux billets des étudiants", in_brief: "En bref", colophon: "Imprimé à Barcelone, par des étudiants.",
   lang_name: "Français",
 };
 
@@ -185,7 +193,7 @@ const es: Dict = {
   step2_t: "Habla", step2_d: "Habla de forma anónima en la app.",
   step3_t: "Quedad", step3_d: "Poneos de acuerdo, pasad la entrada y valoraos.",
   tab_sell: "En venta", tab_want: "Se busca",
-  search_ph: "Buscar una discoteca", all: "Todas", other: "Otra", loading: "Cargando…",
+  search_ph: "Buscar una discoteca o un evento", all: "Todas", other: "Otra", loading: "Cargando…",
   empty_club: "Todavía no hay entradas para {club}.", empty_all: "Todavía no hay nada aquí.",
   empty_sub: "Sé el primero en publicar!",
   empty_cta_sell: "Vender una entrada", empty_cta_want: "Pedir una entrada",
@@ -256,6 +264,10 @@ const es: Dict = {
   rules_title: "Normas de la comunidad",
   rule1: "Revende como máximo al precio original.", rule2: "Publica solo entradas que tengas de verdad.", rule3: "Sé amable. Los estafadores quedan baneados.",
   more_club: "Más entradas para {club}", seller_label: "Vendedor", buyer_label: "Busca",
+  event_label: "Nombre del evento (opcional)", event_ph: "Halloween, End of exams…", event_hint: "Ayuda a la gente a encontrar tu entrada por el nombre de la noche.",
+  faq_toggle: "Preguntas frecuentes", at_club: "en {club}",
+  nav_map: "Mapa", map_title: "Las entradas en el mapa", map_sub: "Todas las discotecas de Barcelona con entradas ahora. Toca un punto para ver qué hay a la venta.", map_see: "Ver las entradas", map_none: "No hay entradas ahora mismo", photos_title: "Noches de Barcelona",
+  tagline: "El mercado de entradas de los estudiantes", in_brief: "En breve", colophon: "Impreso en Barcelona, por estudiantes.",
   lang_name: "Español",
 };
 

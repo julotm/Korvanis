@@ -23,6 +23,7 @@ export type Listing = {
   user_id: string;
   kind: "sell" | "want";
   club: string;
+  event_name: string | null;
   event_date: string;
   price_cents: number;
   face_cents: number | null;
@@ -38,4 +39,11 @@ export function daysUntil(d: string): number {
   today.setHours(0, 0, 0, 0);
   const target = new Date(d + "T00:00:00");
   return Math.round((target.getTime() - today.getTime()) / 86400000);
+}
+
+// Couleur de bracelet stable pour chaque club (0 à 4)
+export function clubColor(club: string): number {
+  let h = 0;
+  for (const ch of club) h = (h * 31 + ch.charCodeAt(0)) % 997;
+  return h % 5;
 }
