@@ -7,7 +7,7 @@ export default function Faq({ showTitle = true }: { showTitle?: boolean }) {
   return (
     <section className="faq">
       {showTitle && <h2>{t("faq_title")}</h2>}
-      {[1, 2, 3, 4, 5, 6].map((n) => (
+      {[1, 2, 3, 4, 5].map((n) => (
         <div className="faq-item" key={n}>
           <h3>{t(`faq${n}_q` as "faq1_q")}</h3>
           <p>{t(`faq${n}_a` as "faq1_a")}</p>
